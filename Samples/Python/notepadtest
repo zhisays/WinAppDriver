@@ -1,0 +1,45 @@
+# ******************************************************************************
+# Classic Windows App Testing
+##
+# notepad
+##
+# app: full executable path
+# ******************************************************************************
+
+
+import unittest
+from appium import webdriver
+
+
+class SimpleNotepadTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(self):
+        # set up appium
+        desired_caps = dict()
+        desired_caps["app"] = r"C:\Windows\System32\notepad.exe"
+        self.driver = webdriver.Remote(
+            command_executor='http://127.0.0.1:4723',
+            desired_capabilities=desired_caps)
+
+    @classmethod
+    def tearDownClass(self):
+        self.driver.quit()
+
+    def test_text(self):
+        """
+        send text, then get it
+        :return:
+        """
+        text = "This is some text"
+        self.driver.find_element_by_class_name("Edit").send_keys(text)
+        result_text = self.driver.find_element_by_class_name("Edit").text
+
+        self.driver.find_element_by_class_name("Edit").clear()
+
+        self.assertEqual(text, result_text)
+
+
+if __name__ == '__main__':
+    suite = unittest.TestLoader().loadTestsFromTestCase(SimpleNotepadTests)
+    unittest.TextTestRunner(verbosity=2).run(suite)
